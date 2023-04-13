@@ -47,8 +47,27 @@ blueprint:
       default: []
       selector:
         action: {}
+    helper_debounce_delay:
+      name: (Optional) Helper - Debounce delay
+      description: Delay used for debouncing RAW controller events, by default set
+        to 0. A value of 0 disables the debouncing feature. Increase this value if
+        you notice custom actions or linked Hooks running multiple times when interacting
+        with the device. When the controller needs to be debounced, usually a value
+        of 100 is enough to remove all duplicate events.
+      default: 0
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: milliseconds
+          mode: box
+          step: 10.0
 variables:
   integration: !input integration
+  helper_debounce_delay: !input helper_debounce_delay
+  integration_id: '{{ integration | lower }}'
+  adjusted_double_press_delay: '{{ [helper_double_press_delay - helper_debounce_delay,
+    100] | max }}'
   actions_mapping:
     zha:
       left_press:
