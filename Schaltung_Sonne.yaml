@@ -1,0 +1,57 @@
+blueprint:
+  name: Schaltung Sonne
+  description: Lichtsteuerung nach Sonnenstand
+  domain: automation
+  author: Certifield / TEG
+  input:
+    light_target:
+      name: Lampe
+      selector:
+        entity:
+          domain:
+            - light
+
+mode: single   
+
+trigger:
+  - platform: sun
+    event: sunrise
+    offset: 0
+    id: LichtAusSun
+  - platform: sun
+    event: sunset
+    offset: "00:30"
+    id: LichtAnSun
+  - platform: time
+    at: "23:00:00"
+    id: LichtAusZeit
+  - platform: time
+    at: "05:30:00"
+    id: LichtAnZeit
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: LichtAusSun
+              - condition: trigger
+                id: LichtAusZeit
+        sequence:
+          - service: light.turn_off
+            data: {}
+            target:
+              entity_id: !input light_target
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: trigger
+                id: LichtAnSun
+              - condition: trigger
+                id: LichtAnZeit
+        sequence:
+          - service: light.turn_on
+            data: {}
+            target:
+              entity_id: !input light_target
