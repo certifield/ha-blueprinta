@@ -10,7 +10,6 @@ blueprint:
         entity:
           domain:
             - light
-            test
 
 mode: single   
 
